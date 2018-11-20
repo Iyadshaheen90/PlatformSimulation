@@ -132,6 +132,19 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
     }
 
+    // reading data from a file
+    private void UIManager_OnReadProgramData(PlatformConfigurationData pcd)
+    {
+        using (System.IO.StreamReader sr = new System.IO.StreamReader(("WriteLines.txt")))
+        {
+            string line;
+            while ((line = sr.ReadLine()) != null)
+            {
+
+            }
+        }
+    }
+
     // triggered when the scene got loaded
     private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
