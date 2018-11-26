@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Programming.unity
     guid: 29a6297eb73887541acf564943209bba
+  - enabled: 1
+    path: Assets/Scenes/Simulate.unity
+    guid: be830f3c6dada4e92bbb3219e700cffa
   m_configObjects: {}

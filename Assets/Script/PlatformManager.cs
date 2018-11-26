@@ -49,6 +49,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     public delegate void PlatformManagerChanged(PlatformConfigurationData pcd);
     public static event PlatformManagerChanged OnPlatformManagerChanged;
 
+    public delegate void SetNodeHeight(float val);
+    public static event SetNodeHeight OnSetNodeHeight;
+
     //public delegate void PlatformManagerUpdateUI(string nodeName);
     //public static event PlatformManagerUpdateUI OnPlatformManagerUpdateUI;
 
@@ -133,22 +136,47 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     }
 
     // reading data from a file
-    private void UIManager_OnReadProgramData(PlatformConfigurationData pcd)
+    //private void UIManager_OnReadProgramData(PlatformConfigurationData pcd)
+    public void readFile()
     {
-        using (System.IO.StreamReader sr = new System.IO.StreamReader(("WriteLines.txt")))
+        using (StreamReader sr = new StreamReader(Path.Combine(Application.dataPath, "WriteLines.txt")))
         {
+            bool isFirstLine = true;
             string line;
             while ((line = sr.ReadLine()) != null)
             {
+                //Debug.Log(line);
+                if (isFirstLine)
+                {
+                    string[] firstLine = line.Split(',');
+                    PlatformConfigurationData newPCD = gameObject.AddComponent<PlatformConfigurationData>();
 
+                    int.TryParse(firstLine[0], out newPCD.mSize);
+                    int.TryParse(firstLine[1], out newPCD.nSize);
+                    float.TryParse(firstLine[2], out newPCD.deltaSpace);
+                    float.TryParse(firstLine[3], out newPCD.height);
+
+                    isFirstLine = false;
+                    UIManager_BuildPlatformOnClicked(newPCD); // building platform using PCD data
+                }
+                else
+                {
+                    string[] currentLine = line.Split(',');
+                    // use delegate OnSetNodeHeight here!
+
+                    //allCube[int.Parse(currentLine[0]), int.Parse(currentLine[1])].
+                    //    transform.GetComponent<PlatformDataNode>().yPosition =
+                    //    float.Parse(currentLine[2]);
+                }
             }
         }
     }
 
     // triggered when the scene got loaded
+    // parameter: arg0.name will give the current scene's name
     private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
-        // arg0.name will give the current scene's name
+        // when we creating platform from scratch
         if (allCube != null)
         {
             if (arg0.name.Equals("Programming"))
@@ -167,6 +195,13 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 BuildPlatform();
             }
             
+        }
+        else // allCube[,] is empty when we go straight into Simulate scene
+        {
+            if (arg0.name.Equals("Simulate"))
+            {
+                readFile();
+            }
         }
     }
 

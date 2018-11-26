@@ -170,6 +170,7 @@ public class UIManager : MonoBehaviour {
                 break;
             case "btnSimulate":
                 Debug.Log("Jumping to Simulate scene..");
+                SceneManager.LoadScene("Simulate");
                 break;
             case "btnExit":
                 Debug.Log("Exiting program...");

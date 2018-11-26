@@ -27,12 +27,14 @@ public class PlatformDataNode : MonoBehaviour {
     private void OnEnable()
     {
         UIManager.OnNodeProgramChanged += UIManager_OnNodeProgramChanged;
+        PlatformManager.OnSetNodeHeight += PlatformManager_OnSetNodeHeight;
     }
 
     // unsubscribing delegates
     private void OnDisable()
     {
         UIManager.OnNodeProgramChanged -= UIManager_OnNodeProgramChanged;
+        PlatformManager.OnSetNodeHeight -= PlatformManager_OnSetNodeHeight;
     }
 
     private void UIManager_OnNodeProgramChanged(float val)
@@ -46,6 +48,14 @@ public class PlatformDataNode : MonoBehaviour {
                 yPosition = val;
             }
         }
+    }
+
+    // setting the height of each node when we go to "Simulate" scene straight away 
+    private void PlatformManager_OnSetNodeHeight(float val)
+    {
+        Debug.Log("Programming " + transform.name + " height");
+        transform.position = new Vector3(transform.position.x, val, transform.position.z);
+        yPosition = val;
     }
 
     // Use this for initialization
