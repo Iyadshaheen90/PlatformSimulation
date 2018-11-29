@@ -49,9 +49,6 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     public delegate void PlatformManagerChanged(PlatformConfigurationData pcd);
     public static event PlatformManagerChanged OnPlatformManagerChanged;
 
-    public delegate void SetNodeHeight(float val);
-    public static event SetNodeHeight OnSetNodeHeight;
-
     //public delegate void PlatformManagerUpdateUI(string nodeName);
     //public static event PlatformManagerUpdateUI OnPlatformManagerUpdateUI;
 
@@ -149,6 +146,8 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 if (isFirstLine)
                 {
                     string[] firstLine = line.Split(',');
+
+                    // creating new PCD and feed it the data from firstLine string
                     PlatformConfigurationData newPCD = gameObject.AddComponent<PlatformConfigurationData>();
 
                     int.TryParse(firstLine[0], out newPCD.mSize);
@@ -156,17 +155,16 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                     float.TryParse(firstLine[2], out newPCD.deltaSpace);
                     float.TryParse(firstLine[3], out newPCD.height);
 
-                    isFirstLine = false;
+                    isFirstLine = false; // set bool to false to access below else part
                     UIManager_BuildPlatformOnClicked(newPCD); // building platform using PCD data
                 }
                 else
                 {
                     string[] currentLine = line.Split(',');
-                    // use delegate OnSetNodeHeight here!
 
-                    //allCube[int.Parse(currentLine[0]), int.Parse(currentLine[1])].
-                    //    transform.GetComponent<PlatformDataNode>().yPosition =
-                    //    float.Parse(currentLine[2]);
+                    // call SimulationSetHeight() from PDN to set + transform each node's height
+                    allCube[int.Parse(currentLine[0]), int.Parse(currentLine[1])].gameObject.transform.
+                        GetComponent<PlatformDataNode>().SimulationSetHeight(float.Parse(currentLine[2]));
                 }
             }
         }
@@ -181,7 +179,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         {
             if (arg0.name.Equals("Programming"))
             {
-                programmingScene = true;
+                programmingScene = true; // set programming flag to true (others defaulted to false)
             }
             else
             {
@@ -200,6 +198,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         {
             if (arg0.name.Equals("Simulate"))
             {
+                simulatingScene = true; // set simulating flag to true (others defaulted to false)
                 readFile();
             }
         }
@@ -461,6 +460,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 pdn.iPosition = i;
                 pdn.jPosition = j;
                 pdn.isProgrammed = programmingScene; // toggle programming flag on each cube
+                pdn.isSimulated = simulatingScene; // toggle simulating flag on each cube
 
 
                 //nextPos[i, j] = cube.transform.position.y;
