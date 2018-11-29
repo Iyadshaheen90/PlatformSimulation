@@ -18,6 +18,7 @@ public class PlatformCameraControl : MonoBehaviour
     {
         UIManager.BuildPlatformOnClicked += UIManager_BuildPlatformOnClicked;
         UIManager.OnUpdateCameraPosition += UIManager_BuildPlatformOnClicked;
+        PlatformManager.OnUpdateCameraPosition += UIManager_BuildPlatformOnClicked;
     }
 
     private void UIManager_BuildPlatformOnClicked(PlatformConfigurationData pcd)
@@ -33,6 +34,7 @@ public class PlatformCameraControl : MonoBehaviour
     {
         UIManager.BuildPlatformOnClicked -= UIManager_BuildPlatformOnClicked;
         UIManager.OnUpdateCameraPosition -= UIManager_BuildPlatformOnClicked;
+        PlatformManager.OnUpdateCameraPosition += UIManager_BuildPlatformOnClicked;
     }
 
     // Use this for initialization

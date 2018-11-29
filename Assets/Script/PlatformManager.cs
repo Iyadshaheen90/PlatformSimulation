@@ -49,6 +49,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     public delegate void PlatformManagerChanged(PlatformConfigurationData pcd);
     public static event PlatformManagerChanged OnPlatformManagerChanged;
 
+    public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
+    public static event UpdateCameraPosition OnUpdateCameraPosition;
+
     //public delegate void PlatformManagerUpdateUI(string nodeName);
     //public static event PlatformManagerUpdateUI OnPlatformManagerUpdateUI;
 
@@ -156,7 +159,13 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                     float.TryParse(firstLine[3], out newPCD.height);
 
                     isFirstLine = false; // set bool to false to access below else part
-                    UIManager_BuildPlatformOnClicked(newPCD); // building platform using PCD data
+                    UIManager_BuildPlatformOnClicked(newPCD); // building platform using newPCD data
+                    //BuildPlatform();
+
+                    // updating UI top panel
+                    OnPlatformManagerChanged(newPCD);
+
+                    Destroy(newPCD); // deleting newPCD to avoid duplicates in Singleton
                 }
                 else
                 {
@@ -184,6 +193,15 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             else
             {
                 programmingScene = false;
+            }
+
+            // will trigger if we have a save file already
+            if (arg0.name.Equals("Simulate"))
+            {
+                allCube = null; // resetting array
+                simulatingScene = true; // set simulating flag to true (others defaulted to false)
+                readFile(); // build platform in here instead, so no need to go to below if (!MainMenu) 
+                return;
             }
 
             // build (and rebuild) the platform if we're not on Main Menu scene
@@ -475,6 +493,15 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             // if subscribed, update data and UI
             OnPlatformManagerChanged(configData);
         }
+
+        // updating camera position after building platform
+        //if (OnUpdateCameraPosition != null)
+        //{
+        //    // update camera if delegate subscribed
+        //    OnUpdateCameraPosition(configData);
+        //    Debug.Log("Updating camera position");
+        //}
+
     }
 
     // quit application

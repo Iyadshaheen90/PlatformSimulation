@@ -101,7 +101,8 @@ public class UIManager : MonoBehaviour {
                 // ----- update camera -----
 
             }
-            if (SceneManager.GetActiveScene().name.Equals("Programming"))
+            if (SceneManager.GetActiveScene().name.Equals("Programming") || 
+                SceneManager.GetActiveScene().name.Equals("Simulate"))
             {
                 // updating UI for size and spacing (top panel)
                 GameObject.Find("TextMxN").GetComponent<Text>().text = pcd.mSize + " x " + pcd.nSize;
@@ -169,8 +170,13 @@ public class UIManager : MonoBehaviour {
                 SceneManager.LoadScene("Programming");
                 break;
             case "btnSimulate":
-                Debug.Log("Jumping to Simulate scene..");
-                SceneManager.LoadScene("Simulate");
+                // check if we got a save file
+                if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "WriteLines.txt")))
+                {
+                    Debug.Log("Save file found!");
+                    Debug.Log("Jumping to Simulate scene..");
+                    SceneManager.LoadScene("Simulate");
+                }
                 break;
             case "btnExit":
                 Debug.Log("Exiting program...");
