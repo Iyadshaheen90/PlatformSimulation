@@ -177,6 +177,10 @@ public class UIManager : MonoBehaviour {
                     Debug.Log("Jumping to Simulate scene..");
                     SceneManager.LoadScene("Simulate");
                 }
+                else
+                {
+                    Debug.Log("No save file found!");
+                }
                 break;
             case "btnExit":
                 Debug.Log("Exiting program...");

@@ -50,7 +50,7 @@ public class PlatformDataNode : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        yPosition = transform.position.y;
+        //yPosition = transform.position.y;
         transform.gameObject.GetComponent<Renderer>().material.color = Color.white;
         //ResetDataNode();
     }
@@ -66,8 +66,30 @@ public class PlatformDataNode : MonoBehaviour {
         //        transform.gameObject.GetComponent<Renderer>().material.color = Color.blue;
         //    }
         //}
-		
-	}
+
+        if (isSimulated)
+        {
+            // smooth transition position
+            transform.position =
+                Vector3.Lerp(
+                    transform.position, // current position
+                    new Vector3(transform.position.x, yPosition, transform.position.z), // destination
+                    Time.deltaTime // lerp time
+                );
+
+            // smooth transition color
+            if (yPosition != 0f)
+            {
+                transform.gameObject.GetComponent<Renderer>().material.color =
+                    Color.Lerp(
+                        transform.gameObject.GetComponent<Renderer>().material.color, // current color
+                        Color.red, // changing the color to this
+                        Time.deltaTime // lerp time
+                    );
+            }
+        }
+
+    }
 
     // resetting data node when not in programming scene
     public void ResetDataNode()
@@ -97,6 +119,11 @@ public class PlatformDataNode : MonoBehaviour {
             yPosition = val;
         }
     }
+
+    //public void SetProgrammedHeight(float val)
+    //{
+    //    yPosition = val;
+    //}
 
     public override string ToString()
     {
