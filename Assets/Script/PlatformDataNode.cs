@@ -74,7 +74,8 @@ public class PlatformDataNode : MonoBehaviour {
                 Vector3.Lerp(
                     transform.position, // current position
                     new Vector3(transform.position.x, yPosition, transform.position.z), // destination
-                    Time.deltaTime // lerp time
+                    //Time.deltaTime // lerp time
+                    0.05f
                 );
 
             // smooth transition color
@@ -84,7 +85,8 @@ public class PlatformDataNode : MonoBehaviour {
                     Color.Lerp(
                         transform.gameObject.GetComponent<Renderer>().material.color, // current color
                         Color.red, // changing the color to this
-                        Time.deltaTime // lerp time
+                        //Time.deltaTime // lerp time
+                        0.05f
                     );
             }
         }
