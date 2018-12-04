@@ -24,6 +24,8 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     public GameObject cubePrefab; // cube prefab
     public GameObject[,] allCube; // array holding all the cubes
 
+    private float[,] programmedHeight; // hold programmed height of all the cubes
+
     //private float[,] nextPos; // holds cubes' next y-axis position value. (m,n = cube coord.)
     //private Color[,] nextColor; // holds cubes' color (m,n = cube coord.)
 
@@ -49,8 +51,8 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     public delegate void PlatformManagerChanged(PlatformConfigurationData pcd);
     public static event PlatformManagerChanged OnPlatformManagerChanged;
 
-    public delegate void SetNodeHeight(float val);
-    public static event SetNodeHeight OnSetNodeHeight;
+    //public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
+    //public static event UpdateCameraPosition OnUpdateCameraPosition;
 
     //public delegate void PlatformManagerUpdateUI(string nodeName);
     //public static event PlatformManagerUpdateUI OnPlatformManagerUpdateUI;
@@ -76,6 +78,26 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     // clicking the green build button
     private void UIManager_BuildPlatformOnClicked(PlatformConfigurationData pcd)
     {
+
+        // set up PCD configData
+        CreatePCDInstance();
+
+        // copy pcd data to configData
+        InitializePCDInstance(pcd);
+
+        BuildPlatform();
+
+        // keep hold of the m and n value
+        //prevM = pcd.mSize;
+        //Debug.Log("prevM = " + prevM);
+        //prevN = pcd.nSize;
+        //Debug.Log("prevN = " + prevN);
+        //prevSpacing = pcd.deltaSpace;
+    }
+
+    // set up PCD configData
+    private void CreatePCDInstance()
+    {
         // erase previous configData if available
         if (configData != null)
         {
@@ -98,21 +120,16 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             //configData = Instantiate(pcd);
             configData = gameObject.AddComponent<PlatformConfigurationData>();
         }
+    }
 
+    // initialize PCD configData values
+    private void InitializePCDInstance(PlatformConfigurationData pcd)
+    {
         // copy pcd data to configData
         configData.mSize = pcd.mSize;
         configData.nSize = pcd.nSize;
         configData.deltaSpace = pcd.deltaSpace;
         configData.height = pcd.height;
-
-        BuildPlatform();
-
-        // keep hold of the m and n value
-        //prevM = pcd.mSize;
-        //Debug.Log("prevM = " + prevM);
-        //prevN = pcd.nSize;
-        //Debug.Log("prevN = " + prevN);
-        //prevSpacing = pcd.deltaSpace;
     }
 
     // writing save file
@@ -149,6 +166,8 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 if (isFirstLine)
                 {
                     string[] firstLine = line.Split(',');
+
+                    // creating new PCD and feed it the data from firstLine string
                     PlatformConfigurationData newPCD = gameObject.AddComponent<PlatformConfigurationData>();
 
                     int.TryParse(firstLine[0], out newPCD.mSize);
@@ -156,20 +175,41 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                     float.TryParse(firstLine[2], out newPCD.deltaSpace);
                     float.TryParse(firstLine[3], out newPCD.height);
 
-                    isFirstLine = false;
-                    UIManager_BuildPlatformOnClicked(newPCD); // building platform using PCD data
+                    isFirstLine = false; // set bool to false to access below else part
+                    //UIManager_BuildPlatformOnClicked(newPCD); // building platform using newPCD data
+                    //BuildPlatform();
+
+                    // set up configData and its value using data from firstLine (newPCD)
+                    CreatePCDInstance();
+                    InitializePCDInstance(newPCD);
+
+                    // initialize programmedHeight array
+                    programmedHeight = new float[newPCD.mSize, newPCD.nSize];
+
+                    // or maybe build platform after we get all the node's y value?
+                    //BuildPlatform();
+
+                    // updating UI top panel
+                    OnPlatformManagerChanged(configData);
+
+                    Destroy(newPCD); // deleting newPCD to avoid duplicates in Singleton
                 }
                 else
                 {
                     string[] currentLine = line.Split(',');
-                    // use delegate OnSetNodeHeight here!
 
-                    //allCube[int.Parse(currentLine[0]), int.Parse(currentLine[1])].
-                    //    transform.GetComponent<PlatformDataNode>().yPosition =
-                    //    float.Parse(currentLine[2]);
+                    programmedHeight[int.Parse(currentLine[0]), int.Parse(currentLine[1])] = float.Parse(currentLine[2]);
+                    //Debug.LogFormat("programmedHeight[{0},{1}] = {2}", 
+                    //    int.Parse(currentLine[0]), int.Parse(currentLine[1]), float.Parse(currentLine[2]));
+
+                    // call SimulationSetHeight() from PDN to set + transform each node's height
+                    //allCube[int.Parse(currentLine[0]), int.Parse(currentLine[1])].gameObject.transform.
+                    //    GetComponent<PlatformDataNode>().SimulationSetHeight(float.Parse(currentLine[2]));
                 }
             }
         }
+
+        BuildPlatform();
     }
 
     // triggered when the scene got loaded
@@ -179,28 +219,48 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         // when we creating platform from scratch
         if (allCube != null)
         {
+
             if (arg0.name.Equals("Programming"))
             {
-                programmingScene = true;
+                programmingScene = true; // set programming flag to true
             }
-            else
+            else { programmingScene = false; }
+
+            // will trigger if we have a save file already
+            if (arg0.name.Equals("Simulate"))
             {
-                programmingScene = false;
+                allCube = null; // resetting array
+                simulatingScene = true; // set simulating flag to true 
+                readFile(); // build platform in here instead, so no need to go to below if (!MainMenu)
+
+                // updating camera position after building platform
+                Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
+
+                // so we don't trigger any other if case
+                return;
             }
+            else { simulatingScene = false; }
 
             // build (and rebuild) the platform if we're not on Main Menu scene
             if (!arg0.name.Equals("MainMenu"))
             {
                 Debug.Log("Changing to arg0 (" + arg0.name + ") scenes, rebuilding platform..");
                 BuildPlatform();
+
+                // updating camera position after building platform
+                Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
             }
-            
+
         }
         else // allCube[,] is empty when we go straight into Simulate scene
         {
             if (arg0.name.Equals("Simulate"))
             {
+                simulatingScene = true; // set simulating flag to true (others defaulted to false)
                 readFile();
+
+                // updating camera position after building platform
+                Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
             }
         }
     }
@@ -461,7 +521,13 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 pdn.iPosition = i;
                 pdn.jPosition = j;
                 pdn.isProgrammed = programmingScene; // toggle programming flag on each cube
+                pdn.isSimulated = simulatingScene; // toggle simulating flag on each cube
+                //pdn.yPosition = programmedHeight[i, j];
 
+                if (simulatingScene)
+                {
+                    pdn.yPosition = programmedHeight[i, j];
+                }
 
                 //nextPos[i, j] = cube.transform.position.y;
                 //nextColor[i, j] = Color.white; // set all cube to white
@@ -475,6 +541,15 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             // if subscribed, update data and UI
             OnPlatformManagerChanged(configData);
         }
+
+        // updating camera position after building platform
+        //if (OnUpdateCameraPosition != null)
+        //{
+        //    // update camera if delegate subscribed
+        //    OnUpdateCameraPosition(configData);
+        //    Debug.Log("Updating camera position");
+        //}
+
     }
 
     // quit application

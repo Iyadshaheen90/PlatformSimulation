@@ -27,14 +27,12 @@ public class PlatformDataNode : MonoBehaviour {
     private void OnEnable()
     {
         UIManager.OnNodeProgramChanged += UIManager_OnNodeProgramChanged;
-        PlatformManager.OnSetNodeHeight += PlatformManager_OnSetNodeHeight;
     }
 
     // unsubscribing delegates
     private void OnDisable()
     {
         UIManager.OnNodeProgramChanged -= UIManager_OnNodeProgramChanged;
-        PlatformManager.OnSetNodeHeight -= PlatformManager_OnSetNodeHeight;
     }
 
     private void UIManager_OnNodeProgramChanged(float val)
@@ -50,17 +48,9 @@ public class PlatformDataNode : MonoBehaviour {
         }
     }
 
-    // setting the height of each node when we go to "Simulate" scene straight away 
-    private void PlatformManager_OnSetNodeHeight(float val)
-    {
-        Debug.Log("Programming " + transform.name + " height");
-        transform.position = new Vector3(transform.position.x, val, transform.position.z);
-        yPosition = val;
-    }
-
     // Use this for initialization
     void Start () {
-        yPosition = transform.position.y;
+        //yPosition = transform.position.y;
         transform.gameObject.GetComponent<Renderer>().material.color = Color.white;
         //ResetDataNode();
     }
@@ -76,8 +66,30 @@ public class PlatformDataNode : MonoBehaviour {
         //        transform.gameObject.GetComponent<Renderer>().material.color = Color.blue;
         //    }
         //}
-		
-	}
+
+        if (isSimulated)
+        {
+            // smooth transition position
+            transform.position =
+                Vector3.Lerp(
+                    transform.position, // current position
+                    new Vector3(transform.position.x, yPosition, transform.position.z), // destination
+                    Time.deltaTime // lerp time
+                );
+
+            // smooth transition color
+            if (yPosition != 0f)
+            {
+                transform.gameObject.GetComponent<Renderer>().material.color =
+                    Color.Lerp(
+                        transform.gameObject.GetComponent<Renderer>().material.color, // current color
+                        Color.red, // changing the color to this
+                        Time.deltaTime // lerp time
+                    );
+            }
+        }
+
+    }
 
     // resetting data node when not in programming scene
     public void ResetDataNode()
@@ -96,6 +108,22 @@ public class PlatformDataNode : MonoBehaviour {
         if (OnUpdatePlatformDataNodeUI != null)
             OnUpdatePlatformDataNodeUI(this);
     }
+
+    // setting the height of each node when we go to "Simulate" scene straight away 
+    public void SimulationSetHeight(float val)
+    {
+        if (isSimulated) // if we're in Simulation scene
+        {
+            Debug.Log("Simulating " + transform.name + " height");
+            transform.position = new Vector3(transform.position.x, val, transform.position.z);
+            yPosition = val;
+        }
+    }
+
+    //public void SetProgrammedHeight(float val)
+    //{
+    //    yPosition = val;
+    //}
 
     public override string ToString()
     {

@@ -38,8 +38,8 @@ public class UIManager : MonoBehaviour {
     public delegate void WriteProgramData(PlatformConfigurationData pcd);
     public static event WriteProgramData OnWriteProgramData;
 
-    public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
-    public static event UpdateCameraPosition OnUpdateCameraPosition;
+    //public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
+    //public static event UpdateCameraPosition OnUpdateCameraPosition;
 
     public delegate void NodeProgramChanged(float val);
     public static event NodeProgramChanged OnNodeProgramChanged;
@@ -101,7 +101,8 @@ public class UIManager : MonoBehaviour {
                 // ----- update camera -----
 
             }
-            if (SceneManager.GetActiveScene().name.Equals("Programming"))
+            if (SceneManager.GetActiveScene().name.Equals("Programming") || 
+                SceneManager.GetActiveScene().name.Equals("Simulate"))
             {
                 // updating UI for size and spacing (top panel)
                 GameObject.Find("TextMxN").GetComponent<Text>().text = pcd.mSize + " x " + pcd.nSize;
@@ -167,10 +168,25 @@ public class UIManager : MonoBehaviour {
             case "btnProgram":
                 Debug.Log("Jumping to Programming scene..");
                 SceneManager.LoadScene("Programming");
+
+                //if (PlatformManager.Instance.configData != null)
+                //{
+                //    OnUpdateCameraPosition(PlatformManager.Instance.configData);
+                //    //BuildPlatformOnClicked(PlatformManager.Instance.configData);
+                //}
                 break;
             case "btnSimulate":
-                Debug.Log("Jumping to Simulate scene..");
-                SceneManager.LoadScene("Simulate");
+                // check if we got a save file
+                if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "WriteLines.txt")))
+                {
+                    Debug.Log("Save file found!");
+                    Debug.Log("Jumping to Simulate scene..");
+                    SceneManager.LoadScene("Simulate");
+                }
+                else
+                {
+                    Debug.Log("No save file found!");
+                }
                 break;
             case "btnExit":
                 Debug.Log("Exiting program...");
