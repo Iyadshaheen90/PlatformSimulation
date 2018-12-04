@@ -51,8 +51,8 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     public delegate void PlatformManagerChanged(PlatformConfigurationData pcd);
     public static event PlatformManagerChanged OnPlatformManagerChanged;
 
-    public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
-    public static event UpdateCameraPosition OnUpdateCameraPosition;
+    //public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
+    //public static event UpdateCameraPosition OnUpdateCameraPosition;
 
     //public delegate void PlatformManagerUpdateUI(string nodeName);
     //public static event PlatformManagerUpdateUI OnPlatformManagerUpdateUI;
@@ -219,41 +219,38 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         // when we creating platform from scratch
         if (allCube != null)
         {
-            //if (arg0.name.Equals("PlatformConfig"))
-            //{
-            //    programmingScene = false;
-            //    simulatingScene = false;
-            //}
 
             if (arg0.name.Equals("Programming"))
             {
                 programmingScene = true; // set programming flag to true
             }
-            else
-            {
-                programmingScene = false;
-            }
+            else { programmingScene = false; }
 
             // will trigger if we have a save file already
             if (arg0.name.Equals("Simulate"))
             {
                 allCube = null; // resetting array
                 simulatingScene = true; // set simulating flag to true 
-                readFile(); // build platform in here instead, so no need to go to below if (!MainMenu) 
+                readFile(); // build platform in here instead, so no need to go to below if (!MainMenu)
+
+                // updating camera position after building platform
+                Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
+
+                // so we don't trigger any other if case
                 return;
             }
-            else
-            {
-                simulatingScene = false;
-            }
+            else { simulatingScene = false; }
 
             // build (and rebuild) the platform if we're not on Main Menu scene
             if (!arg0.name.Equals("MainMenu"))
             {
                 Debug.Log("Changing to arg0 (" + arg0.name + ") scenes, rebuilding platform..");
                 BuildPlatform();
+
+                // updating camera position after building platform
+                Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
             }
-            
+
         }
         else // allCube[,] is empty when we go straight into Simulate scene
         {
@@ -261,6 +258,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             {
                 simulatingScene = true; // set simulating flag to true (others defaulted to false)
                 readFile();
+
+                // updating camera position after building platform
+                Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
             }
         }
     }

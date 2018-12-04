@@ -38,8 +38,8 @@ public class UIManager : MonoBehaviour {
     public delegate void WriteProgramData(PlatformConfigurationData pcd);
     public static event WriteProgramData OnWriteProgramData;
 
-    public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
-    public static event UpdateCameraPosition OnUpdateCameraPosition;
+    //public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
+    //public static event UpdateCameraPosition OnUpdateCameraPosition;
 
     public delegate void NodeProgramChanged(float val);
     public static event NodeProgramChanged OnNodeProgramChanged;
@@ -168,6 +168,12 @@ public class UIManager : MonoBehaviour {
             case "btnProgram":
                 Debug.Log("Jumping to Programming scene..");
                 SceneManager.LoadScene("Programming");
+
+                //if (PlatformManager.Instance.configData != null)
+                //{
+                //    OnUpdateCameraPosition(PlatformManager.Instance.configData);
+                //    //BuildPlatformOnClicked(PlatformManager.Instance.configData);
+                //}
                 break;
             case "btnSimulate":
                 // check if we got a save file
