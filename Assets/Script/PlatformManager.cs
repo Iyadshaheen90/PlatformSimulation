@@ -236,6 +236,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 // updating camera position after building platform
                 Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
 
+                // start simulation
+                StartCoroutine(startSimulation());
+
                 // so we don't trigger any other if case
                 return;
             }
@@ -261,6 +264,43 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
 
                 // updating camera position after building platform
                 Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
+
+                // start simulation
+                StartCoroutine(startSimulation());
+            }
+        }
+    }
+
+    // simulate the programmed platform
+    private IEnumerator startSimulation()
+    {
+        if (programmedHeight != null && allCube != null)
+        {
+            if (simulatingScene)
+            {
+                // row++ because we want the whole thing to move forward
+                for (int row = 0; row < configData.mSize; row++)
+                {
+                    // start working (workingRow) from row and backward to 0
+                    // start reading (readingRow) programmedHeight[,] from last row, and only reading for this much (row+1) rows
+                    int workingRow = row, readingRow = configData.mSize - 1;
+                    while (workingRow != -1 && readingRow >= configData.mSize - 1 - row)
+                    {
+                        // lerping every column while we at workingRow
+                        int col = 0;
+                        while (col < configData.nSize)
+                        {
+                            allCube[workingRow, col].GetComponent<PlatformDataNode>().SetProgrammedHeight(programmedHeight[readingRow, col]);
+                            col++;
+                        }
+                        workingRow--;
+                        readingRow--;
+                    }
+
+                    // wait before moving the whole thing 
+                    yield return new WaitForSeconds(1f);
+                }
+                // need to work on wrap around the platform and simulate all over again..
             }
         }
     }
@@ -275,6 +315,12 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
 	
 	// Update is called once per frame
 	void Update () {
+
+        // look at a node height to try getting the best movement timing
+        //if (simulatingScene)
+        //{
+        //    Debug.Log("height(0,1) = " + allCube[0, 1].gameObject.transform.position.y);
+        //}
 
         // ---------- keyboard input ----------
 
@@ -524,10 +570,10 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 pdn.isSimulated = simulatingScene; // toggle simulating flag on each cube
                 //pdn.yPosition = programmedHeight[i, j];
 
-                if (simulatingScene)
-                {
-                    pdn.yPosition = programmedHeight[i, j];
-                }
+                //if (simulatingScene)
+                //{
+                //    pdn.yPosition = programmedHeight[i, j];
+                //}
 
                 //nextPos[i, j] = cube.transform.position.y;
                 //nextColor[i, j] = Color.white; // set all cube to white
