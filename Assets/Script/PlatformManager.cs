@@ -278,9 +278,12 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         {
             if (simulatingScene)
             {
+                int row = 0;
                 // row++ because we want the whole thing to move forward
-                for (int row = 0; row < configData.mSize; row++)
+                while(row < configData.mSize)
                 {
+                //for (int row = 0; row < configData.mSize; row++)
+                //{
                     // start working (workingRow) from row and backward to 0
                     // start reading (readingRow) programmedHeight[,] from last row, and only reading for this much (row+1) rows
                     int workingRow = row, readingRow = configData.mSize - 1;
@@ -298,7 +301,10 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                     }
 
                     // wait before moving the whole thing 
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(0.8f);
+                    row++;
+                    if (row == configData.mSize)
+                        row = 0;
                 }
                 // need to work on wrap around the platform and simulate all over again..
             }

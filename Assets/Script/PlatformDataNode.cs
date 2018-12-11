@@ -78,17 +78,20 @@ public class PlatformDataNode : MonoBehaviour {
                     0.05f
                 );
 
-            // smooth transition color
-            //if (yPosition != 0f)
-            //{
-            //    transform.gameObject.GetComponent<Renderer>().material.color =
-            //        Color.Lerp(
-            //            transform.gameObject.GetComponent<Renderer>().material.color, // current color
-            //            Color.red, // changing the color to this
-            //            //Time.deltaTime // lerp time
-            //            0.05f
-            //        );
-            //}
+             //smooth transition color
+            if (yPosition != 0f)
+            {
+                transform.gameObject.GetComponent<Renderer>().material.color = Color.red; // changing the color to this
+                        //Time.deltaTime // lerp time
+                     
+                  
+            }
+
+            else{
+                transform.gameObject.GetComponent<Renderer>().material.color = Color.white; // changing the color to this
+                                                                                            //Time.deltaTime // lerp time
+
+            }
         }
 
     }
