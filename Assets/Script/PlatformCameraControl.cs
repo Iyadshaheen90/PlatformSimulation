@@ -81,6 +81,7 @@ public class PlatformCameraControl : MonoBehaviour
         // transform.position = new Vector3(pcd.mSize, 10, pcd.nSize);
         // targetPosition = new Vector3(centerX, 3, centerZ);
 
+        // CHANGE CAMERA POSITION HERE
         centerX = pcd.mSize / 4;
         centerZ = pcd.nSize / 2;
 
