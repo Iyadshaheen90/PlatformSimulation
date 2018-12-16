@@ -346,7 +346,6 @@ MonoBehaviour:
   spacingSlider: {fileID: 1429063953}
   yMaxSlider: {fileID: 1478961404}
   heightSlider: {fileID: 0}
-  panelSetup: {fileID: 755189258}
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -2292,8 +2291,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 274.5, y: -32.89}
-  m_SizeDelta: {x: 79, y: 28}
+  m_AnchoredPosition: {x: 285, y: -32.89}
+  m_SizeDelta: {x: 100, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1023193275
 MonoBehaviour:
@@ -3061,8 +3060,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 274.5, y: 23.110022}
-  m_SizeDelta: {x: 79, y: 28}
+  m_AnchoredPosition: {x: 285, y: 23.110022}
+  m_SizeDelta: {x: 100, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1253859328
 MonoBehaviour:
@@ -4047,8 +4046,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 274.5, y: -4.889978}
-  m_SizeDelta: {x: 79, y: 28}
+  m_AnchoredPosition: {x: 285, y: -4.889978}
+  m_SizeDelta: {x: 100, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1552771683
 MonoBehaviour:

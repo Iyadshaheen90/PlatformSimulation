@@ -17,31 +17,16 @@ public class PlatformCameraControl : MonoBehaviour
     private void OnEnable()
     {
         UIManager.BuildPlatformOnClicked += UIManager_BuildPlatformOnClicked;
-        //UIManager.OnUpdateCameraPosition += UIManager_BuildPlatformOnClicked;
-        //PlatformManager.OnUpdateCameraPosition += UIManager_BuildPlatformOnClicked;
     }
 
     private void UIManager_BuildPlatformOnClicked(PlatformConfigurationData pcd)
     {
-        //centerX = pcd.mSize / 2;
-        //centerZ = pcd.nSize / 2;
-
-        //transform.position = new Vector3(pcd.mSize, 10, pcd.nSize);
-        //targetPosition = new Vector3(centerX, 3, centerZ);
         UpdateCameraPosition(pcd);
     }
 
     private void OnDisable()
     {
         UIManager.BuildPlatformOnClicked -= UIManager_BuildPlatformOnClicked;
-        //UIManager.OnUpdateCameraPosition -= UIManager_BuildPlatformOnClicked;
-        //PlatformManager.OnUpdateCameraPosition += UIManager_BuildPlatformOnClicked;
-    }
-
-    // Use this for initialization
-    void Start()
-    {
-
     }
 
     // Update is called once per frame

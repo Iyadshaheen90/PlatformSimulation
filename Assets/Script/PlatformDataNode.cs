@@ -13,7 +13,7 @@ public class PlatformDataNode : MonoBehaviour {
 
     public float yPosition; // individual node will hold their own y-axis position
 
-    public Color nodeColor;
+    public Color nodeColor; // holds which color to change simulated cubes to in Simulation scene
 
     // state of the node
     public bool isSelected;
@@ -50,22 +50,11 @@ public class PlatformDataNode : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        //yPosition = transform.position.y;
         transform.gameObject.GetComponent<Renderer>().material.color = Color.white;
-        //ResetDataNode();
     }
 
     // Update is called once per frame
     void Update () {
-
-        //if (isProgrammed) // if we're in Programming scene
-        //{
-        //    if (isSelected) // if the cube is selected
-        //    {
-        //        // change cube color to blue when we clicked on it
-        //        transform.gameObject.GetComponent<Renderer>().material.color = Color.blue;
-        //    }
-        //}
 
         if (isSimulated)
         {
@@ -97,10 +86,7 @@ public class PlatformDataNode : MonoBehaviour {
     public void ResetDataNode()
     {
         isSelected = false;
-
         transform.gameObject.GetComponent<Renderer>().material.color = Color.yellow;
-        //yPosition = 0f;
-        //transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
     }
 
     public void SelectNode()

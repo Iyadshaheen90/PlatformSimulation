@@ -24,12 +24,6 @@ public class UIManager : MonoBehaviour {
     float spacingValue = 0.1f;
     float heightValue = 1.0f;
 
-    // RectTransform = transform for the panel
-    public RectTransform panelSetup;
-    
-    //bool displaySetupPanelBool = true;
-
-
     // ----- delegates and events -----
 
     public delegate void BuildPlatformClicked(PlatformConfigurationData pcd);
@@ -38,9 +32,6 @@ public class UIManager : MonoBehaviour {
     public delegate void WriteProgramData(PlatformConfigurationData pcd);
     public static event WriteProgramData OnWriteProgramData;
 
-    //public delegate void UpdateCameraPosition(PlatformConfigurationData pcd);
-    //public static event UpdateCameraPosition OnUpdateCameraPosition;
-
     public delegate void NodeProgramChanged(float val);
     public static event NodeProgramChanged OnNodeProgramChanged;
 
@@ -48,8 +39,6 @@ public class UIManager : MonoBehaviour {
     private void OnEnable()
     {
         PlatformManager.OnPlatformManagerChanged += PlatformManager_OnPlatformManagerChanged;
-        //PlatformManager.OnPlatformManagerUpdateUI += PlatformManager_OnPlatformManagerUpdateUI;
-
         PlatformDataNode.OnUpdatePlatformDataNodeUI += PlatformDataNode_OnUpdatePlatformDataNodeUI;
     }
 
@@ -57,8 +46,6 @@ public class UIManager : MonoBehaviour {
     private void OnDisable()
     {
         PlatformManager.OnPlatformManagerChanged -= PlatformManager_OnPlatformManagerChanged;
-        //PlatformManager.OnPlatformManagerUpdateUI -= PlatformManager_OnPlatformManagerUpdateUI;
-
         PlatformDataNode.OnUpdatePlatformDataNodeUI -= PlatformDataNode_OnUpdatePlatformDataNodeUI;
     }
 
@@ -72,6 +59,7 @@ public class UIManager : MonoBehaviour {
         heightSlider.value = pdn.yPosition;
     }
 
+    // updating panels and its content depending on which scene is currently on
     private void PlatformManager_OnPlatformManagerChanged(PlatformConfigurationData pcd)
     {
         if (pcd != null)
@@ -79,7 +67,6 @@ public class UIManager : MonoBehaviour {
             if (SceneManager.GetActiveScene().name.Equals("PlatformConfig"))
             {
                 // ----- updating config panel UI and correcting the variables' value -----
-
                 Debug.Log("pcd != null, updating PlatformConfig UI to reflect current data");
 
                 mSlider.value = pcd.mSize;
@@ -93,13 +80,9 @@ public class UIManager : MonoBehaviour {
 
                 heightValue = pcd.height;
                 YMaxSliderValue(yMaxSlider);
-                //GameObject.Find("TextYRangeNum").GetComponent<Text>().text = "" + heightValue; // update text
 
                 // ----- top panel update -----
                 TopPanelUpdate();
-
-                // ----- update camera -----
-
             }
             if (SceneManager.GetActiveScene().name.Equals("Programming") || 
                 SceneManager.GetActiveScene().name.Equals("Simulate"))
@@ -110,46 +93,6 @@ public class UIManager : MonoBehaviour {
             }
         }
     }
-
-    //private void PlatformManager_OnPlatformManagerUpdateUI(string nodeName)
-    //{
-    //    // UI interaction in programming goes here to PlatformManager
-    //    //GameObject.Find("TextNodeName").GetComponent<Text>().text = nodeName;
-
-    //    //heightSlider.value = 0f;
-
-    //}
-
-    void Start()
-    {
-        //if (SceneManager.GetActiveScene().name == "PlatformConfig")
-        //{
-        //    Debug.Log("UITextInitiaize from Start");
-        //    UITextInitialize();
-        //}
-
-    }
-
-    // all UI update happening in real time is made in here
-    // TODO: remove all these from Update() and use delegates for each of them
-    //void Update()
-    //{
-    //    // updating y-axis range (top panel) in real time
-    //    GameObject.Find("TextYAxisNum").GetComponent<Text>().text = "" + platformSimManager.GetDisplacementRange();
-
-    //    // updating y-axis range (if setup panel is displayed) in real time
-    //    if (displaySetupPanelBool) 
-    //        GameObject.Find("TextYRangeNum").GetComponent<Text>().text = "" + platformSimManager.GetDisplacementRange();
-
-    //    // updating color panel in real time
-    //    GameObject.Find("DropdownColor").GetComponent<Dropdown>().value = platformSimManager.GetColorOption();
-
-    //    // updating Start/Stop button (will also update itself when user pressed 'T' key)
-    //    if (platformSimManager.GetSimStatus() == true)
-    //        GameObject.Find("ButtonStart").GetComponentInChildren<Text>().text = "STOP";
-    //    else
-    //        GameObject.Find("ButtonStart").GetComponentInChildren<Text>().text = "START";
-    //}
 
     // handling all button behavior here
     public void ButtonClick(Button b)
@@ -168,12 +111,6 @@ public class UIManager : MonoBehaviour {
             case "btnProgram":
                 Debug.Log("Jumping to Programming scene..");
                 SceneManager.LoadScene("Programming");
-
-                //if (PlatformManager.Instance.configData != null)
-                //{
-                //    OnUpdateCameraPosition(PlatformManager.Instance.configData);
-                //    //BuildPlatformOnClicked(PlatformManager.Instance.configData);
-                //}
                 break;
             case "btnSimulate":
                 // check if we got a save file
@@ -183,10 +120,7 @@ public class UIManager : MonoBehaviour {
                     Debug.Log("Jumping to Simulate scene..");
                     SceneManager.LoadScene("Simulate");
                 }
-                else
-                {
-                    Debug.Log("No save file found!");
-                }
+                else { Debug.Log("No save file found!"); }
                 break;
             case "btnExit":
                 Debug.Log("Exiting program...");
@@ -234,69 +168,6 @@ public class UIManager : MonoBehaviour {
         }
     }
 
-    // initializing UI text
-    private void UITextInitialize()
-    {
-        // initializing top panel
-        GameObject.Find("TextMxN").GetComponent<Text>().text = mValue + " x " + nValue;
-        GameObject.Find("TextSpacingFloat").GetComponent<Text>().text = "" + spacingValue;
-        GameObject.Find("TextYAxisNum").GetComponent<Text>().text = "" + heightValue;
-
-        // initializing setup panel
-        //panelSetup.gameObject.SetActive(displaySetupPanelBool); // hide setup panel
-        GameObject.Find("TextYRangeNum").GetComponent<Text>().text = "" + heightValue;
-
-        // initializing sliders' value
-        mSlider.value = mValue;
-        nSlider.value = nValue;
-        spacingSlider.value = spacingValue;
-    }
-
-    // Start/Stop button on the top panel
-    public void ButtonStart()
-    {
-        platformSimManager.SetSimulation();
-    }
-
-    // Exit button on top panel
-    public void ButtonExit()
-    {
-        platformSimManager.QuitApp();
-    }
-
-    // Setup button on top panel
-    //public void DisplaySetupPanel()
-    //{
-    //    displaySetupPanelBool = !displaySetupPanelBool;
-    //    panelSetup.gameObject.SetActive(displaySetupPanelBool);
-    //}
-
-    // + button on Setup panel
-    //public void YRangePlus()
-    //{
-    //    //platformSimManager.RangePlus();
-
-    //    heightValue += 0.1f;
-    //    heightValue = Mathf.Round(heightValue * 10f) / 10f; // set value to just 1 decimal point
-    //    if (heightValue > 1f) heightValue = 1f; // set upper limit to 1
-    //    //Debug.Log("new heightValue = " + heightValue);
-
-    //    GameObject.Find("TextYRangeNum").GetComponent<Text>().text = "" + heightValue; // update text
-    //}
-
-    // - button on Setup panel
-    //public void YRangeMinus()
-    //{
-    //    //platformSimManager.RangeMinus();
-
-    //    heightValue -= 0.1f;
-    //    heightValue = Mathf.Round(heightValue * 10f) / 10f; // set value to just 1 decimal point
-    //    if (heightValue < 0f) heightValue = 0f; // set lower limit to 0
-    //    //Debug.Log("new heightValue = " + heightValue);
-
-    //    GameObject.Find("TextYRangeNum").GetComponent<Text>().text = "" + heightValue; // update text
-    //}
-
     // Dropdown Color menu
     public void ColorChange()
     {
@@ -317,9 +188,6 @@ public class UIManager : MonoBehaviour {
             case 3: // blue
                 platformSimManager.SetColorOption(3);
                 break;
-            //case 4: // RGB
-            //    platformSimManager.SetColorOption(4);
-            //    break;
             default:
                 break;
         }
@@ -359,7 +227,6 @@ public class UIManager : MonoBehaviour {
     public void HeightProgramSliderValue(Slider hs)
     {
         // get value and update UI
-        //float heightValue = hs.value;
         float heightValue = Mathf.Round(hs.value * 10f) / 10f; // get slider value to just 1 decimal point
         GameObject.Find("TextHeightNum").GetComponent<Text>().text = "" + heightValue;
 
@@ -370,15 +237,10 @@ public class UIManager : MonoBehaviour {
     // Building platform using new values
     private void TopPanelUpdate()
     {
-        // rebuild platform from values set in UI
-        //platformSimManager.BuildPlatform(mValue, nValue, spacingValue);
-
         // updating UI for size and spacing (top panel)
         GameObject.Find("TextMxN").GetComponent<Text>().text = mValue + " x " + nValue;
         GameObject.Find("TextSpacingFloat").GetComponent<Text>().text = "" + spacingValue;
         GameObject.Find("TextYAxisNum").GetComponent<Text>().text = "" + heightValue;
-
-        //Debug.Log("Green button clicked!");
     }
 
 }

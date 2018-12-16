@@ -61,16 +61,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\Examples\Basics.cs" />
-    <Compile Include="Assets\Script\Examples\NewBasics.cs" />
-    <Compile Include="Assets\Script\Examples\UIManagerExample.cs" />
-    <Compile Include="Assets\Script\Examples\UIManagerExample2.cs" />
     <Compile Include="Assets\Script\PlatformCameraControl.cs" />
     <Compile Include="Assets\Script\PlatformConfigurationData.cs" />
     <Compile Include="Assets\Script\PlatformDataNode.cs" />
     <Compile Include="Assets\Script\PlatformGenericSinglton.cs" />
     <Compile Include="Assets\Script\PlatformManager.cs" />
-    <Compile Include="Assets\Script\PopUpWindow.cs" />
     <Compile Include="Assets\Script\UIManager.cs" />
     <None Include="Assets\WriteLines.txt" />
     <None Include="Assets\Fonts\Jupiter\LICENSE.txt" />

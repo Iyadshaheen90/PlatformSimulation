@@ -1078,7 +1078,6 @@ MonoBehaviour:
   spacingSlider: {fileID: 0}
   yMaxSlider: {fileID: 0}
   heightSlider: {fileID: 0}
-  panelSetup: {fileID: 0}
 --- !u!4 &1336802359
 Transform:
   m_ObjectHideFlags: 0
@@ -1125,7 +1124,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 285.26, y: 14}
-  m_SizeDelta: {x: 100.3, y: 28}
+  m_SizeDelta: {x: 100, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1357875464
 MonoBehaviour:
@@ -1366,8 +1365,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 285.2, y: -14}
-  m_SizeDelta: {x: 100.42, y: 28}
+  m_AnchoredPosition: {x: 285.13, y: -14}
+  m_SizeDelta: {x: 100, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1745086161
 MonoBehaviour:
