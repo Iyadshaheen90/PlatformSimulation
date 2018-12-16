@@ -236,6 +236,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             if (arg0.name.Equals("Programming"))
             {
                 programmingScene = true; // set programming flag to true
+                programmedHeight = null; // reset array
             }
             else { programmingScene = false; }
 
@@ -253,6 +254,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 colorOption = configData.color;
 
                 // start simulation
+                isSimPaused = false; // reset pause flag
                 StartCoroutine(startSimulation());
 
                 // so we don't trigger any other if case
@@ -263,6 +265,8 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             // build (and rebuild) the platform if we're not on Main Menu scene
             if (!arg0.name.Equals("MainMenu"))
             {
+                StopAllCoroutines(); // safe check to stop Simulation
+
                 Debug.Log("Changing to arg0 (" + arg0.name + ") scenes, rebuilding platform..");
                 BuildPlatform();
 
