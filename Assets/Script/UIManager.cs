@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour {
     // updating Programming scene UI using data from node
     private void PlatformDataNode_OnUpdatePlatformDataNodeUI(PlatformDataNode pdn)
     {
-        GameObject.Find("TextNodeName").GetComponent<Text>().text = string.Format("Node[{0},{1}]", pdn.iPosition, pdn.jPosition);
+        GameObject.Find("TextNodeName").GetComponent<Text>().text = string.Format("Node [ {0}, {1} ]", pdn.iPosition, pdn.jPosition);
         GameObject.Find("TextHeightNum").GetComponent<Text>().text = "" + pdn.yPosition;
 
         heightSlider.maxValue = PlatformManager.Instance.configData.height; // set maxValue to the slider

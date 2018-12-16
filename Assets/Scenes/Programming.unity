@@ -1901,7 +1901,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Node[x,y]
+  m_Text: Node [ x, y ]
 --- !u!222 &1355717401
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2243,7 +2243,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0.00
+  m_Text: 0.0
 --- !u!222 &1730280053
 CanvasRenderer:
   m_ObjectHideFlags: 0
