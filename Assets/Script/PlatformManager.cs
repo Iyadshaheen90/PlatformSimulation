@@ -33,6 +33,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     private bool simulatingScene = false;
     private bool programmingScene = false;
 
+    // pressing 'T' key to pause/play simulation
+    private bool isSimPaused = false;
+
     /**
      *  which color option the sim currently is on
      *  0 = grayscale, 1 = red, 2 = green, 3 = blue, 4 = all RGB
@@ -298,6 +301,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 // row++ because we want the whole thing to move forward
                 while (row < configData.mSize)
                 {
+                    // pausing simulation if T is pressed
+                    while (isSimPaused) { yield return null; }
+
                     //for (int row = 0; row < configData.mSize; row++)
                     //{
                     // start working (workingRow) from row and backward to 0
@@ -335,6 +341,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 int looping = 0; // total row looping
                 while (simulatingScene)
                 {
+                    // pausing simulation if T is pressed
+                    while (isSimPaused) { yield return null; }
+
                     Debug.Log("start loop 2");
                     int readingRow = configData.mSize - 1 - looping; // start reading top chunk that's not looped yet
                     int readingLoop = configData.mSize - 1; // all the lower chunk is the one that's being looped
@@ -405,23 +414,23 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
 
         // ---------- keyboard input ----------
 
-        // start and stop simulation
-        if (Input.GetKeyDown(KeyCode.T))
+        // start and stop simulation (only in simulation scene)
+        if (Input.GetKeyDown(KeyCode.T) && simulatingScene)
         {
             SetSimulation();
         }
 
         // key W increase displacement range
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            //RangePlus();
-        }
+        //if (Input.GetKeyDown(KeyCode.W))
+        //{
+        //    //RangePlus();
+        //}
 
         // key S decrease displacement range
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            //RangeMinus();
-        }
+        //if (Input.GetKeyDown(KeyCode.S))
+        //{
+        //    //RangeMinus();
+        //}
 
         // quit application
         // (command will be ignored in editor)
@@ -431,7 +440,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // grayscale mode
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.H) && simulatingScene)
         {
             // set our color option
             colorOption = 0;
@@ -439,7 +448,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // red-only mode
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && simulatingScene)
         {
             // set our color option
             colorOption = 1;
@@ -447,7 +456,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // green-only mode
-        if (Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G) && simulatingScene)
         {
             // set our color option
             colorOption = 2;
@@ -455,7 +464,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // blue-only mode
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B) && simulatingScene)
         {
             // set our color option
             colorOption = 3;
@@ -463,12 +472,12 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // random RGB
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            // set our color option
-            colorOption = 4;
-            Debug.Log("Color mode set to RGB");
-        }
+        //if (Input.GetKeyDown(KeyCode.E))
+        //{
+        //    // set our color option
+        //    colorOption = 4;
+        //    Debug.Log("Color mode set to RGB");
+        //}
 
         // ---------- mouse input ----------
 
@@ -780,11 +789,13 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     // switch simulation on/off
     public void SetSimulation()
     {
-        simulatingScene = !simulatingScene;
+        isSimPaused = !isSimPaused;
+
+        //simulatingScene = !simulatingScene;
 
         // button testing purposes
-        if (simulatingScene) Debug.Log("sim start");
-        else Debug.Log("sim stop");
+        if (isSimPaused) Debug.Log("sim paused");
+        else Debug.Log("sim resumed");
     }
 
 }
