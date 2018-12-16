@@ -36,9 +36,10 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     /**
      *  which color option the sim currently is on
      *  0 = grayscale, 1 = red, 2 = green, 3 = blue, 4 = all RGB
-     *  color is set to grayscale once the simulation is started
+     *  //color is set to grayscale once the simulation is started
+     *  unset value is -1
      */
-    private int colorOption = 0;
+    private int colorOption = -1;
 
     public Material cubeMaterial;
 
@@ -130,6 +131,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         configData.nSize = pcd.nSize;
         configData.deltaSpace = pcd.deltaSpace;
         configData.height = pcd.height;
+        configData.color = pcd.color;
     }
 
     // writing save file
@@ -174,6 +176,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                     int.TryParse(firstLine[1], out newPCD.nSize);
                     float.TryParse(firstLine[2], out newPCD.deltaSpace);
                     float.TryParse(firstLine[3], out newPCD.height);
+                    int.TryParse(firstLine[4], out newPCD.color);
 
                     isFirstLine = false; // set bool to false to access below else part
                     //UIManager_BuildPlatformOnClicked(newPCD); // building platform using newPCD data
@@ -243,6 +246,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 // updating camera position after building platform
                 Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
 
+                // updating color option from PCD
+                colorOption = configData.color;
+
                 // start simulation
                 StartCoroutine(startSimulation());
 
@@ -272,6 +278,9 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 // updating camera position after building platform
                 Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
 
+                // updating color option from PCD
+                colorOption = configData.color;
+
                 // start simulation
                 StartCoroutine(startSimulation());
             }
@@ -300,7 +309,11 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                         int col = 0;
                         while (col < configData.nSize)
                         {
-                            allCube[workingRow, col].GetComponent<PlatformDataNode>().SetProgrammedHeight(programmedHeight[readingRow, col]);
+                            allCube[workingRow, col].GetComponent<PlatformDataNode>().
+                                SetProgrammedHeightAndColor(
+                                    programmedHeight[readingRow, col],
+                                    SetNewColor()
+                                );
                             col++;
                         }
                         workingRow--;
@@ -330,7 +343,11 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                         int col = 0;
                         while (col < configData.nSize)
                         {
-                            allCube[allrow, col].GetComponent<PlatformDataNode>().SetProgrammedHeight(programmedHeight[readingRow, col]);
+                            allCube[allrow, col].GetComponent<PlatformDataNode>().
+                                SetProgrammedHeightAndColor(
+                                    programmedHeight[readingRow, col],
+                                    SetNewColor()
+                                );
                             col++;
                         }
                         Debug.Log("readingRow = " + readingRow + ", allrow = " + allrow);
@@ -344,7 +361,11 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                         int col = 0;
                         while (col < configData.nSize)
                         {
-                            allCube[rowsleft, col].GetComponent<PlatformDataNode>().SetProgrammedHeight(programmedHeight[readingLoop, col]);
+                            allCube[rowsleft, col].GetComponent<PlatformDataNode>().
+                                SetProgrammedHeightAndColor(
+                                    programmedHeight[readingLoop, col],
+                                    SetNewColor()
+                                );
                             col++;
                         }
                         Debug.Log("readingLoop = " + readingLoop + ", rowsleft = " + rowsleft);
@@ -731,20 +752,24 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         switch (colorOption)
         {
             case 0:
-                randomNewColor = Random.ColorHSV(0f, 0f, 0f, 0f, 0f, 1f); // grayscale
+                randomNewColor = new Color(0.5f, 0.5f, 0.5f); // grayscale
+                //randomNewColor = Random.ColorHSV(0f, 0f, 0f, 0f, 0f, 1f); // grayscale
                 break;
             case 1:
-                randomNewColor = new Color(Random.Range(0f, 1.0f), 0, 0); // red spectrum
+                randomNewColor = new Color(1.0f, 0, 0); // red spectrum
+                //randomNewColor = new Color(Random.Range(0f, 1.0f), 0, 0); // red spectrum
                 break;
             case 2:
-                randomNewColor = new Color(0, Random.Range(0f, 1.0f), 0); // green spectrum
+                randomNewColor = new Color(0, 1.0f, 0); // green spectrum
+                //randomNewColor = new Color(0, Random.Range(0f, 1.0f), 0); // green spectrum
                 break;
             case 3:
-                randomNewColor = new Color(0, 0, Random.Range(0f, 1.0f)); // blue spectrum
+                randomNewColor = new Color(0, 0, 1.0f); // blue spectrum
+                //randomNewColor = new Color(0, 0, Random.Range(0f, 1.0f)); // blue spectrum
                 break;
-            case 4:
-                randomNewColor = new Color(Random.Range(0f, 1.0f), Random.Range(0f, 1.0f), Random.Range(0f, 1.0f)); // all RGB
-                break;
+            //case 4:
+            //    randomNewColor = new Color(Random.Range(0f, 1.0f), Random.Range(0f, 1.0f), Random.Range(0f, 1.0f)); // all RGB
+            //    break;
             default:
                 break;
         }

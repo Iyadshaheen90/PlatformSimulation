@@ -209,6 +209,7 @@ public class UIManager : MonoBehaviour {
                     pcd.nSize = nValue;
                     pcd.deltaSpace = spacingValue;
                     pcd.height = heightValue;
+                    pcd.color = colorDropdown.value;
 
                     // send PCD data to consumer (PlatformManager & Camera)
                     BuildPlatformOnClicked(pcd);
@@ -316,9 +317,9 @@ public class UIManager : MonoBehaviour {
             case 3: // blue
                 platformSimManager.SetColorOption(3);
                 break;
-            case 4: // RGB
-                platformSimManager.SetColorOption(4);
-                break;
+            //case 4: // RGB
+            //    platformSimManager.SetColorOption(4);
+            //    break;
             default:
                 break;
         }
