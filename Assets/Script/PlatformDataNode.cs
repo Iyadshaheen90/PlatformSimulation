@@ -74,18 +74,20 @@ public class PlatformDataNode : MonoBehaviour {
                 Vector3.Lerp(
                     transform.position, // current position
                     new Vector3(transform.position.x, yPosition, transform.position.z), // destination
-                    Time.deltaTime // lerp time
+                    //Time.deltaTime // lerp time
+                    0.05f
                 );
 
-            // smooth transition color
+             // transition color
             if (yPosition != 0f)
             {
-                transform.gameObject.GetComponent<Renderer>().material.color =
-                    Color.Lerp(
-                        transform.gameObject.GetComponent<Renderer>().material.color, // current color
-                        Color.red, // changing the color to this
-                        Time.deltaTime // lerp time
-                    );
+                // change simulated node color to the one set on dropdown 
+                transform.gameObject.GetComponent<Renderer>().material.color = nodeColor; 
+            }
+
+            else {
+                // change back to white when we're not simulating
+                transform.gameObject.GetComponent<Renderer>().material.color = Color.white; // changing the color to this
             }
         }
 
@@ -98,6 +100,7 @@ public class PlatformDataNode : MonoBehaviour {
 
         transform.gameObject.GetComponent<Renderer>().material.color = Color.yellow;
         //yPosition = 0f;
+        //transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
     }
 
     public void SelectNode()
@@ -120,10 +123,11 @@ public class PlatformDataNode : MonoBehaviour {
         }
     }
 
-    //public void SetProgrammedHeight(float val)
-    //{
-    //    yPosition = val;
-    //}
+    public void SetProgrammedHeightAndColor(float val, Color color)
+    {
+        yPosition = val;
+        nodeColor = color;
+    }
 
     public override string ToString()
     {

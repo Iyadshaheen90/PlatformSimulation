@@ -13,9 +13,10 @@ public class PlatformConfigurationData : MonoBehaviour {
     public int nSize = 9;
     public float deltaSpace = 0.1f; // spacing between cubes
     public float height = 1.0f; // y-axis range
+    public int color = 0; 
 
     public override string ToString()
     {
-        return string.Format("{0},{1},{2},{3}", mSize, nSize, deltaSpace, height);
+        return string.Format("{0},{1},{2},{3},{4}", mSize, nSize, deltaSpace, height, color);
     }
 }

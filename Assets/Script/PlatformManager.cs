@@ -33,12 +33,16 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     private bool simulatingScene = false;
     private bool programmingScene = false;
 
+    // pressing 'T' key to pause/play simulation
+    private bool isSimPaused = false;
+
     /**
      *  which color option the sim currently is on
      *  0 = grayscale, 1 = red, 2 = green, 3 = blue, 4 = all RGB
-     *  color is set to grayscale once the simulation is started
+     *  //color is set to grayscale once the simulation is started
+     *  unset value is -1
      */
-    private int colorOption = 0;
+    private int colorOption = -1;
 
     public Material cubeMaterial;
 
@@ -130,6 +134,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         configData.nSize = pcd.nSize;
         configData.deltaSpace = pcd.deltaSpace;
         configData.height = pcd.height;
+        configData.color = pcd.color;
     }
 
     // writing save file
@@ -174,6 +179,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                     int.TryParse(firstLine[1], out newPCD.nSize);
                     float.TryParse(firstLine[2], out newPCD.deltaSpace);
                     float.TryParse(firstLine[3], out newPCD.height);
+                    int.TryParse(firstLine[4], out newPCD.color);
 
                     isFirstLine = false; // set bool to false to access below else part
                     //UIManager_BuildPlatformOnClicked(newPCD); // building platform using newPCD data
@@ -219,10 +225,18 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         // when we creating platform from scratch
         if (allCube != null)
         {
+            // set all flag to false at Main Menu
+            if (arg0.name.Equals("MainMenu"))
+            {
+                StopAllCoroutines(); // safe check to stop Simulation since only MainMenu scene don't have platform built
+                programmingScene = false;
+                simulatingScene = false;
+            }
 
             if (arg0.name.Equals("Programming"))
             {
                 programmingScene = true; // set programming flag to true
+                programmedHeight = null; // reset array
             }
             else { programmingScene = false; }
 
@@ -236,6 +250,13 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 // updating camera position after building platform
                 Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
 
+                // updating color option from PCD
+                colorOption = configData.color;
+
+                // start simulation
+                isSimPaused = false; // reset pause flag
+                StartCoroutine(startSimulation());
+
                 // so we don't trigger any other if case
                 return;
             }
@@ -244,6 +265,8 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             // build (and rebuild) the platform if we're not on Main Menu scene
             if (!arg0.name.Equals("MainMenu"))
             {
+                StopAllCoroutines(); // safe check to stop Simulation
+
                 Debug.Log("Changing to arg0 (" + arg0.name + ") scenes, rebuilding platform..");
                 BuildPlatform();
 
@@ -261,10 +284,121 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
 
                 // updating camera position after building platform
                 Camera.main.gameObject.GetComponent<PlatformCameraControl>().UpdateCameraPosition(configData);
+
+                // updating color option from PCD
+                colorOption = configData.color;
+
+                // start simulation
+                StartCoroutine(startSimulation());
             }
         }
     }
 
+    // simulate the programmed platform
+    private IEnumerator startSimulation()
+    {
+        if (programmedHeight != null && allCube != null)
+        {
+            if (simulatingScene)
+            {
+                int row = 0;
+                // row++ because we want the whole thing to move forward
+                while (row < configData.mSize)
+                {
+                    // pausing simulation if T is pressed
+                    while (isSimPaused) { yield return null; }
+
+                    //for (int row = 0; row < configData.mSize; row++)
+                    //{
+                    // start working (workingRow) from row and backward to 0
+                    // start reading (readingRow) programmedHeight[,] from last row, and only reading for this much (row+1) rows
+                    int workingRow = row, readingRow = configData.mSize - 1;
+                    while (workingRow != -1 && readingRow >= configData.mSize - 1 - row)
+                    {
+                        // lerping every column while we at workingRow
+                        int col = 0;
+                        while (col < configData.nSize)
+                        {
+                            allCube[workingRow, col].GetComponent<PlatformDataNode>().
+                                SetProgrammedHeightAndColor(
+                                    programmedHeight[readingRow, col],
+                                    SetNewColor()
+                                );
+                            col++;
+                        }
+                        workingRow--;
+                        readingRow--;
+                    }
+
+                    row++;
+
+                    // wait before moving the whole thing
+                    // (if statement so that we don't need to wait extra to transition to the looping part)
+                    if (row < configData.mSize) yield return new WaitForSeconds(0.8f);
+
+                    // resetting row so that we can start from beginning again
+                    //if (row == configData.mSize) row = 0;
+                }
+                
+                // looping the simulation back to front after we finished the first round run (and will continue in this state)
+
+                int looping = 0; // total row looping
+                while (simulatingScene)
+                {
+                    // pausing simulation if T is pressed
+                    while (isSimPaused) { yield return null; }
+
+                    Debug.Log("start loop 2");
+                    int readingRow = configData.mSize - 1 - looping; // start reading top chunk that's not looped yet
+                    int readingLoop = configData.mSize - 1; // all the lower chunk is the one that's being looped
+                    for (int allrow = configData.mSize - 1; allrow > looping - 1; allrow--)
+                    {
+                        int col = 0;
+                        while (col < configData.nSize)
+                        {
+                            allCube[allrow, col].GetComponent<PlatformDataNode>().
+                                SetProgrammedHeightAndColor(
+                                    programmedHeight[readingRow, col],
+                                    SetNewColor()
+                                );
+                            col++;
+                        }
+                        Debug.Log("readingRow = " + readingRow + ", allrow = " + allrow);
+                        readingRow--;
+
+                        // wait before moving the whole thing (debug)
+                        //yield return new WaitForSeconds(0.8f);
+                    }
+                    for (int rowsleft = looping - 1; rowsleft > -1; rowsleft--)
+                    {
+                        int col = 0;
+                        while (col < configData.nSize)
+                        {
+                            allCube[rowsleft, col].GetComponent<PlatformDataNode>().
+                                SetProgrammedHeightAndColor(
+                                    programmedHeight[readingLoop, col],
+                                    SetNewColor()
+                                );
+                            col++;
+                        }
+                        Debug.Log("readingLoop = " + readingLoop + ", rowsleft = " + rowsleft);
+                        readingLoop--;
+
+                        // wait before moving the whole thing (debug)
+                        //yield return new WaitForSeconds(0.8f);
+                    }
+
+                    // wait before moving the whole thing 
+                    yield return new WaitForSeconds(0.8f);
+                    looping++;
+
+                    // resetting all counter
+                    if (looping == configData.mSize) looping = 0;
+                }
+
+            }
+        }
+    }
 
     // Use this for initialization
     void Start () {
@@ -276,25 +410,31 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
 	// Update is called once per frame
 	void Update () {
 
+        // look at a node height to try getting the best movement timing
+        //if (simulatingScene)
+        //{
+        //    Debug.Log("height(0,1) = " + allCube[0, 1].gameObject.transform.position.y);
+        //}
+
         // ---------- keyboard input ----------
 
-        // start and stop simulation
-        if (Input.GetKeyDown(KeyCode.T))
+        // start and stop simulation (only in simulation scene)
+        if (Input.GetKeyDown(KeyCode.T) && simulatingScene)
         {
             SetSimulation();
         }
 
         // key W increase displacement range
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            //RangePlus();
-        }
+        //if (Input.GetKeyDown(KeyCode.W))
+        //{
+        //    //RangePlus();
+        //}
 
         // key S decrease displacement range
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            //RangeMinus();
-        }
+        //if (Input.GetKeyDown(KeyCode.S))
+        //{
+        //    //RangeMinus();
+        //}
 
         // quit application
         // (command will be ignored in editor)
@@ -304,7 +444,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // grayscale mode
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.H) && simulatingScene)
         {
             // set our color option
             colorOption = 0;
@@ -312,7 +452,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // red-only mode
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && simulatingScene)
         {
             // set our color option
             colorOption = 1;
@@ -320,7 +460,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // green-only mode
-        if (Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G) && simulatingScene)
         {
             // set our color option
             colorOption = 2;
@@ -328,7 +468,7 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // blue-only mode
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B) && simulatingScene)
         {
             // set our color option
             colorOption = 3;
@@ -336,12 +476,12 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         }
 
         // random RGB
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            // set our color option
-            colorOption = 4;
-            Debug.Log("Color mode set to RGB");
-        }
+        //if (Input.GetKeyDown(KeyCode.E))
+        //{
+        //    // set our color option
+        //    colorOption = 4;
+        //    Debug.Log("Color mode set to RGB");
+        //}
 
         // ---------- mouse input ----------
 
@@ -524,10 +664,10 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                 pdn.isSimulated = simulatingScene; // toggle simulating flag on each cube
                 //pdn.yPosition = programmedHeight[i, j];
 
-                if (simulatingScene)
-                {
-                    pdn.yPosition = programmedHeight[i, j];
-                }
+                //if (simulatingScene)
+                //{
+                //    pdn.yPosition = programmedHeight[i, j];
+                //}
 
                 //nextPos[i, j] = cube.transform.position.y;
                 //nextColor[i, j] = Color.white; // set all cube to white
@@ -625,20 +765,24 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         switch (colorOption)
         {
             case 0:
-                randomNewColor = Random.ColorHSV(0f, 0f, 0f, 0f, 0f, 1f); // grayscale
+                randomNewColor = new Color(0.5f, 0.5f, 0.5f); // grayscale
+                //randomNewColor = Random.ColorHSV(0f, 0f, 0f, 0f, 0f, 1f); // grayscale
                 break;
             case 1:
-                randomNewColor = new Color(Random.Range(0f, 1.0f), 0, 0); // red spectrum
+                randomNewColor = new Color(1.0f, 0, 0); // red spectrum
+                //randomNewColor = new Color(Random.Range(0f, 1.0f), 0, 0); // red spectrum
                 break;
             case 2:
-                randomNewColor = new Color(0, Random.Range(0f, 1.0f), 0); // green spectrum
+                randomNewColor = new Color(0, 1.0f, 0); // green spectrum
+                //randomNewColor = new Color(0, Random.Range(0f, 1.0f), 0); // green spectrum
                 break;
             case 3:
-                randomNewColor = new Color(0, 0, Random.Range(0f, 1.0f)); // blue spectrum
+                randomNewColor = new Color(0, 0, 1.0f); // blue spectrum
+                //randomNewColor = new Color(0, 0, Random.Range(0f, 1.0f)); // blue spectrum
                 break;
-            case 4:
-                randomNewColor = new Color(Random.Range(0f, 1.0f), Random.Range(0f, 1.0f), Random.Range(0f, 1.0f)); // all RGB
-                break;
+            //case 4:
+            //    randomNewColor = new Color(Random.Range(0f, 1.0f), Random.Range(0f, 1.0f), Random.Range(0f, 1.0f)); // all RGB
+            //    break;
             default:
                 break;
         }
@@ -649,11 +793,13 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
     // switch simulation on/off
     public void SetSimulation()
     {
-        simulatingScene = !simulatingScene;
+        isSimPaused = !isSimPaused;
+
+        //simulatingScene = !simulatingScene;
 
         // button testing purposes
-        if (simulatingScene) Debug.Log("sim start");
-        else Debug.Log("sim stop");
+        if (isSimPaused) Debug.Log("sim paused");
+        else Debug.Log("sim resumed");
     }
 
 }

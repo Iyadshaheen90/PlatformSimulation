@@ -1019,15 +1019,13 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: Grayscale Spectrum
+    - m_Text: Gray
       m_Image: {fileID: 0}
-    - m_Text: Red Spectrum
+    - m_Text: Red
       m_Image: {fileID: 0}
-    - m_Text: Green Spectrum
+    - m_Text: Green
       m_Image: {fileID: 0}
-    - m_Text: Blue Spectrum
-      m_Image: {fileID: 0}
-    - m_Text: Random RGB
+    - m_Text: Blue
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3440,7 +3438,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Start Color:'
+  m_Text: 'Simulating Color:'
 --- !u!222 &1309182001
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4371,7 +4369,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Grayscale Spectrum
+  m_Text: Gray
 --- !u!222 &1762561215
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4515,7 +4513,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'M Value:'
+  m_Text: 'Total Rows:'
 --- !u!222 &1795464018
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4954,7 +4952,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'N Value:'
+  m_Text: 'Total Columns:'
 --- !u!222 &1963525303
 CanvasRenderer:
   m_ObjectHideFlags: 0
