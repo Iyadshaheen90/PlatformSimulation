@@ -103,6 +103,7 @@ public class PlatformDataNode : MonoBehaviour {
 
         transform.gameObject.GetComponent<Renderer>().material.color = Color.yellow;
         //yPosition = 0f;
+        //transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
     }
 
     public void SelectNode()

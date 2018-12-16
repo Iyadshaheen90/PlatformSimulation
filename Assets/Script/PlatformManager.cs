@@ -219,6 +219,13 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
         // when we creating platform from scratch
         if (allCube != null)
         {
+            // set all flag to false at Main Menu
+            if (arg0.name.Equals("MainMenu"))
+            {
+                StopAllCoroutines(); // safe check to stop Simulation since only MainMenu scene don't have platform built
+                programmingScene = false;
+                simulatingScene = false;
+            }
 
             if (arg0.name.Equals("Programming"))
             {
@@ -280,10 +287,10 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
             {
                 int row = 0;
                 // row++ because we want the whole thing to move forward
-                while(row < configData.mSize)
+                while (row < configData.mSize)
                 {
-                //for (int row = 0; row < configData.mSize; row++)
-                //{
+                    //for (int row = 0; row < configData.mSize; row++)
+                    //{
                     // start working (workingRow) from row and backward to 0
                     // start reading (readingRow) programmedHeight[,] from last row, and only reading for this much (row+1) rows
                     int workingRow = row, readingRow = configData.mSize - 1;
@@ -300,17 +307,64 @@ public class PlatformManager : PlatformGenericSinglton<PlatformManager> {
                         readingRow--;
                     }
 
+                    row++;
+
+                    // wait before moving the whole thing
+                    // (if statement so that we don't need to wait extra to transition to the looping part)
+                    if (row < configData.mSize) yield return new WaitForSeconds(0.8f);
+
+                    // resetting row so that we can start from beginning again
+                    //if (row == configData.mSize) row = 0;
+                }
+                
+                // looping the simulation back to front after we finished the first round run (and will continue in this state)
+
+                int looping = 0; // total row looping
+                while (simulatingScene)
+                {
+                    Debug.Log("start loop 2");
+                    int readingRow = configData.mSize - 1 - looping; // start reading top chunk that's not looped yet
+                    int readingLoop = configData.mSize - 1; // all the lower chunk is the one that's being looped
+                    for (int allrow = configData.mSize - 1; allrow > looping - 1; allrow--)
+                    {
+                        int col = 0;
+                        while (col < configData.nSize)
+                        {
+                            allCube[allrow, col].GetComponent<PlatformDataNode>().SetProgrammedHeight(programmedHeight[readingRow, col]);
+                            col++;
+                        }
+                        Debug.Log("readingRow = " + readingRow + ", allrow = " + allrow);
+                        readingRow--;
+
+                        // wait before moving the whole thing (debug)
+                        //yield return new WaitForSeconds(0.8f);
+                    }
+                    for (int rowsleft = looping - 1; rowsleft > -1; rowsleft--)
+                    {
+                        int col = 0;
+                        while (col < configData.nSize)
+                        {
+                            allCube[rowsleft, col].GetComponent<PlatformDataNode>().SetProgrammedHeight(programmedHeight[readingLoop, col]);
+                            col++;
+                        }
+                        Debug.Log("readingLoop = " + readingLoop + ", rowsleft = " + rowsleft);
+                        readingLoop--;
+
+                        // wait before moving the whole thing (debug)
+                        //yield return new WaitForSeconds(0.8f);
+                    }
+
                     // wait before moving the whole thing 
                     yield return new WaitForSeconds(0.8f);
-                    row++;
-                    if (row == configData.mSize)
-                        row = 0;
+                    looping++;
+
+                    // resetting all counter
+                    if (looping == configData.mSize) looping = 0;
                 }
-                // need to work on wrap around the platform and simulate all over again..
+
             }
         }
     }
-
 
     // Use this for initialization
     void Start () {
