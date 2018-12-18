@@ -235,6 +235,7 @@ MonoBehaviour:
   spacingSlider: {fileID: 0}
   yMaxSlider: {fileID: 0}
   heightSlider: {fileID: 381333568}
+  errorText: {fileID: 0}
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0

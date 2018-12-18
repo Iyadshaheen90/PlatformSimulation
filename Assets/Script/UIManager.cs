@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -17,6 +15,8 @@ public class UIManager : MonoBehaviour {
     public Slider yMaxSlider; // maximum y-axis (PlatformConfig scene)
 
     public Slider heightSlider; // individual node height (Programming scene)
+
+    public Text errorText;
 
     // holds all the value for initializing the platform
     int mValue = 16;
@@ -115,7 +115,11 @@ public class UIManager : MonoBehaviour {
                     Debug.Log("Jumping to Programming scene..");
                     SceneManager.LoadScene("Programming");
                 }
-                else { Debug.Log("No platform has been set up yet!"); }
+                else {
+                    if (errorText != null)
+                        GameObject.Find("errorText").GetComponent<Text>().text = "No platform has been set up yet.";
+                    Debug.Log("No platform has been set up yet!");
+                }
                 break;
             case "btnSimulate":
                 // check if we got a save file
@@ -125,7 +129,11 @@ public class UIManager : MonoBehaviour {
                     Debug.Log("Jumping to Simulate scene..");
                     SceneManager.LoadScene("Simulate");
                 }
-                else { Debug.Log("No save file found!"); }
+                else {
+                    if (errorText != null)
+                        GameObject.Find("errorText").GetComponent<Text>().text = "No save file found.";
+                    Debug.Log("No save file found!");
+                }
                 break;
             case "btnExit":
                 Debug.Log("Exiting program...");
@@ -138,6 +146,10 @@ public class UIManager : MonoBehaviour {
                 if (BuildPlatformOnClicked != null)
                 {
                     Debug.Log("Green button clicked! Building platform...");
+
+                    // erasing error text from view
+                    if (errorText != null)
+                        GameObject.Find("errorText").GetComponent<Text>().text = "";
 
                     // initialize PCD
                     PlatformConfigurationData pcd;
