@@ -1056,7 +1056,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa59e5769b33c4245acc0444ce62cb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cubePrefab: {fileID: 0}
+  cubePrefab: {fileID: 1686826015829958, guid: f7ea960285b6a7a419b5ab942cfde218, type: 2}
   cubeMaterial: {fileID: 2100000, guid: 29f649daccfa75349a564d18620d3295, type: 2}
   configData: {fileID: 0}
   currentSelection: {fileID: 0}

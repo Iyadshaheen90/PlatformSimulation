@@ -109,8 +109,13 @@ public class UIManager : MonoBehaviour {
                 SceneManager.LoadScene("PlatformConfig");
                 break;
             case "btnProgram":
-                Debug.Log("Jumping to Programming scene..");
-                SceneManager.LoadScene("Programming");
+                // check if there's a platform already built
+                if (PlatformManager.Instance.allCube != null)
+                {
+                    Debug.Log("Jumping to Programming scene..");
+                    SceneManager.LoadScene("Programming");
+                }
+                else { Debug.Log("No platform has been set up yet!"); }
                 break;
             case "btnSimulate":
                 // check if we got a save file

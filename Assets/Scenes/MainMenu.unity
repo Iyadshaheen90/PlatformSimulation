@@ -856,6 +856,50 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 880245417}
   m_CullTransparentMesh: 0
+--- !u!1 &1317359037
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1317359039}
+  - component: {fileID: 1317359038}
+  m_Layer: 0
+  m_Name: PlatformManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1317359038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1317359037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa59e5769b33c4245acc0444ce62cb8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cubePrefab: {fileID: 1686826015829958, guid: f7ea960285b6a7a419b5ab942cfde218, type: 2}
+  cubeMaterial: {fileID: 2100000, guid: 29f649daccfa75349a564d18620d3295, type: 2}
+  configData: {fileID: 0}
+  currentSelection: {fileID: 0}
+--- !u!4 &1317359039
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1317359037}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1333334371
 GameObject:
   m_ObjectHideFlags: 0
@@ -1225,7 +1269,6 @@ MonoBehaviour:
   spacingSlider: {fileID: 0}
   yMaxSlider: {fileID: 0}
   heightSlider: {fileID: 0}
-  panelSetup: {fileID: 0}
 --- !u!4 &2075050614
 Transform:
   m_ObjectHideFlags: 0
